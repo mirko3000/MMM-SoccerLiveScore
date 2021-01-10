@@ -82,7 +82,8 @@ Module.register("MMM-SoccerLiveScore", {
 
         self.sendSocketNotification('CONFIG', {
             leagues: self.config.leagues,
-            showLogos: self.config.showLogos
+            showLogos: self.config.showLogos,
+            showTables: self.config.showTables
         });
     },
 
@@ -150,7 +151,8 @@ Module.register("MMM-SoccerLiveScore", {
                     var team_logo_cell = document.createElement('td');
                     var team_logo_image = document.createElement('img');
                     team_logo_image.className = 'MMM-SoccerLiveScore-team_logo';
-                    team_logo_image.src = 'data:image/png;base64, ' + this.logos[table[i].team_id];
+                    // team_logo_image.src = 'data:image/png;base64, ' + this.logos[table[i].team_id];
+                    team_logo_image.src = 'https://www.toralarm.com/api/proxy/images/ta/images/teams/'+table[i].team_id+'/64/';
                     team_logo_image.width = 20;
                     team_logo_image.height = 20;
                     team_logo_cell.appendChild(team_logo_image);
@@ -194,7 +196,7 @@ Module.register("MMM-SoccerLiveScore", {
             title.innerHTML = this.leagueIds[this.activeId];
             wrapper.appendChild(title);
 
-            var activeLeagueStandings = this.standings[this.activeId];
+            var activeLeagueStandings = this.standings[this.activeId] || [];
             for (var i = 0; i < activeLeagueStandings.length; i++) {
                 if (activeLeagueStandings[i].matches !== undefined) {
 
@@ -221,7 +223,8 @@ Module.register("MMM-SoccerLiveScore", {
                             var team1_logo_cell = document.createElement('td');
                             var team1_logo_image = document.createElement('img');
                             team1_logo_image.className = 'MMM-SoccerLiveScore-team1_logo';
-                            team1_logo_image.src = 'data:image/png;base64, ' + this.logos[activeLeagueStandings[i].matches[j].team1_id];
+                            // team1_logo_image.src = 'data:image/png;base64, ' + this.logos[activeLeagueStandings[i].matches[j].team1_id];
+                            team1_logo_image.src = 'https://www.toralarm.com/api/proxy/images/ta/images/teams/'+activeLeagueStandings[i].matches[j].team1_id+'/64/';
                             team1_logo_image.width = 20;
                             team1_logo_image.height = 20;
                             team1_logo_cell.appendChild(team1_logo_image);
@@ -252,7 +255,8 @@ Module.register("MMM-SoccerLiveScore", {
                             var team2_logo_cell = document.createElement('td');
                             var team2_logo_image = document.createElement('img');
                             team2_logo_image.className = 'MMM-SoccerLiveScore-team2_logo';
-                            team2_logo_image.src = 'data:image/png;base64, ' + this.logos[activeLeagueStandings[i].matches[j].team2_id];
+                            // team2_logo_image.src = 'data:image/png;base64, ' + this.logos[activeLeagueStandings[i].matches[j].team2_id];
+                            team2_logo_image.src = 'https://www.toralarm.com/api/proxy/images/ta/images/teams/'+activeLeagueStandings[i].matches[j].team2_id+'/64/';
                             team2_logo_image.width = 20;
                             team2_logo_image.height = 20;
                             team2_logo_cell.appendChild(team2_logo_image);

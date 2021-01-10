@@ -1,3 +1,6 @@
+**fork of: https://github.com/mrtysn/MMM-SoccerLiveScore**  
+
+
 MMM-SoccerLiveScore
 ===================
 This a module for the [MagicMirror](https://github.com/MichMich/MagicMirror). It displays live scores of your favorite soccer leagues and competitions.
@@ -6,14 +9,14 @@ This a module for the [MagicMirror](https://github.com/MichMich/MagicMirror). It
 
 ### Scores
 
-![](https://github.com/LukeSkywalker92/MMM-SoccerLiveScore/blob/master/preview.png?raw=true)
+![](https://github.com/0m4r/MMM-SoccerLiveScore/blob/master/preview.png?raw=true)
 
 ### Table
 
-![](https://github.com/LukeSkywalker92/MMM-SoccerLiveScore/blob/master/table.png?raw=true)
+![](https://github.com/0m4r/MMM-SoccerLiveScore/blob/master/table.png?raw=true)
 
 ## Installation
-1. Navigate into your MagicMirror's `modules` folder and execute `git clone https://github.com/LukeSkywalker92/MMM-SoccerLiveScore.git`.
+1. Navigate into your MagicMirror's `modules` folder and execute `git clone https://github.com/0m4r/MMM-SoccerLiveScore.git`.
 
 
 ## Config
