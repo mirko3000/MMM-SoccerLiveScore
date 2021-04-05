@@ -1,40 +1,69 @@
+/* .module.MMM-SoccerLiveScore {
+  width: fit-content;
+} */
 
-tr {
-
+.MMM-SoccerLiveScore__time {
+  text-align: center;
+  background-color: #6666660d;
 }
 
-.MMM-SoccerLiveScore-time {
-    text-align: center;
+.MMM-SoccerLiveScore__colon {
+  width: 2px;
+  text-align: center;
 }
 
 .MMM-SoccerLiveScore-team_logo {
-    margin-right: 10px;
-    margin-left: 10px;
-    position: relative;
-    top: 3px;
+  position: relative;
+  top: 3px;
 }
 
-.MMM-SoccerLiveScore-team1_logo {
-    margin-left: 10px;
-    position: relative;
-    top: 2px;
+.MMM-SoccerLiveScore-team_logo--invert {
+  filter: invert(1);
 }
 
+.MMM-SoccerLiveScore-team1_logo,
 .MMM-SoccerLiveScore-team2_logo {
-    margin-right: 10px;
-    position: relative;
-    top: 2px;
+  position: relative;
+  top: 2px;
+  background-color: transparent;
 }
 
-.MMM-SoccerLiveScore-team1_score {
-    margin-left: 5px;
+.MMM-SoccerLiveScore-active {
+  color: red;
 }
 
-.MMM-SoccerLiveScore-team2_score {
-    margin-right: 5px;
+.MMM-SoccerLiveScore__is_playing {
+  width: 10px;
+  text-align: center;
+  vertical-align: middle;
 }
 
-.MMM-SoccerLiveScore-red {
-    color: red;
+.MMM-SoccerLiveScore__is_playing__active-dot {
+  margin: 0;
+  padding: 0;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 100%;
+  animation: pulsate 4s ease-in-out;
+  animation-iteration-count: infinite;
+  opacity: 0.1;
+  display: inline-block;
 }
-
+@keyframes pulsate {
+  0% {
+    opacity: 0.1;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
