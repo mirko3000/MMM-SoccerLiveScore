@@ -80,6 +80,10 @@ Here is an example of an entry in `config.js`
         <td align="left">2</td>
     </tr>  
     <tr>
+        <td align="left">Euro 20/201</td>
+        <td align="left">4100</td>
+    </tr>  
+    <tr>
         <th colspan="2">Germany</th>
     </tr>
     <tr>
