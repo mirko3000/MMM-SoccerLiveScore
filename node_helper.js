@@ -17,6 +17,7 @@ module.exports = NodeHelper.create({
   showStandings: false,
   showTables: false,
   showScorers: false,
+  showDetails: false,
   baseURL: 'https://www.ta4-data.de/ta/data',
   requestOptions: {
     method: 'POST',
@@ -116,20 +117,39 @@ module.exports = NodeHelper.create({
       url,
     };
 
-    request(options, function (error, response, body) {
+    request(options, function async(error, _response, body) {
       if (!error && body) {
         const data = JSON.parse(body);
         Log.debug(self.name, 'getStandings | data', JSON.stringify(data, null, 2));
         self.refreshTime = (data.refresh_time || 5 * 60) * 1000;
         Log.debug(self.name, 'getStandings | refresh_time', data.refresh_time, self.refreshTime);
         const standings = data;
-        self.sendSocketNotification('STANDINGS', {
-          leagueId: leagueId,
-          standings: standings,
-        });
-        self.timeoutStandings[leagueId] = setTimeout(function () {
-          self.getStandings(leagueId);
-        }, self.refreshTime);
+
+        const forLoop = async () => {
+          if (self.showDetails) {
+            for (let s of standings.data) {
+              if (s.type === 'matches') {
+                const matches = s.matches;
+                for (let m of matches) {
+                  const d = await self.getDetails(leagueId, m.match_id);
+                  details = d.filter(t => t.type === 'details');
+                  m.details = details && details[0] ? details[0].details : []
+                };
+              }
+            };
+          }
+        }
+
+        forLoop().then(() => {
+          self.sendSocketNotification('STANDINGS', {
+            leagueId: leagueId,
+            standings: standings,
+          });
+
+          self.timeoutStandings[leagueId] = setTimeout(function () {
+            self.getStandings(leagueId);
+          }, self.refreshTime);
+        })
       } else {
         Log.error(error);
         self.timeoutStandings[leagueId] = setTimeout(function () {
@@ -171,11 +191,33 @@ module.exports = NodeHelper.create({
     });
   },
 
+  getDetails: function (leagueId, matchId) {
+    const url = `${this.baseURL}/competitions/${leagueId.toString()}/matches/${matchId.toString()}/details`;
+    Log.info(this.name, 'getDetails', url);
+    const self = this;
+    const options = {
+      ...this.requestOptions,
+      url,
+    };
+    let details = []
+    return new Promise((resolve, _reject) => {
+      request(options, function (error, _response, body) {
+        if (!error && body) {
+          const data = JSON.parse(body);
+          Log.debug(self.name, 'getDetails | data', JSON.stringify(data, null, 2));
+          details = data.data || [];
+        }
+        resolve(details);
+      });
+    });
+  },
+
   socketNotificationReceived: function (notification, payload) {
     if (notification === 'CONFIG') {
       this.showStandings = payload.showStandings;
       this.showTables = payload.showTables;
       this.showScorers = payload.showScorers;
+      this.showDetails = payload.showDetails;
       this.getLeagueIds(payload.leagues);
     }
   },

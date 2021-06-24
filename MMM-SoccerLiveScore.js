@@ -19,14 +19,15 @@ Module.register('MMM-SoccerLiveScore', {
   tablesActive: true,
 
   defaults: {
-    leagues: [1], // Uefa Champions League (UCL)
+    leagues: [1], // UEFA Champions League (UCL)
     displayTime: 20 * 1000, // 20 seconds
     showNames: true,
     showLogos: true,
     showStandings: true,
     showTables: true,
     showScorers: true,
-    logosToInvert: [30001132, 30000991, 30000145], //Juventus team_id in 1, 23, and 328 leagues
+    showDetails: true,
+    logosToInvert: [30001132, 30000991, 30000145], // Juventus team_id in 1, 23, and 328 leagues
   },
 
   getScripts: function () {
@@ -92,12 +93,13 @@ Module.register('MMM-SoccerLiveScore', {
       showTables: this.config.showTables,
       showScorers: this.config.showScorers,
       showStandings: this.config.showStandings,
+      showDetails: this.config.showDetails,
     };
     this.sendSocketNotification('CONFIG', config);
   },
 
   getDom: function () {
-    Log.info(this.name, 'getDom', this.activeId);
+    Log.debug(this.name, 'getDom', this.activeId);
     clearTimeout(this.updateDomTimeout);
     const self = this;
     const wrapper = document.createElement('div');
@@ -112,8 +114,8 @@ Module.register('MMM-SoccerLiveScore', {
     const scorers = this.scorers && Object.keys(this.scorers).length ? this.scorers[this.activeId] : [];
 
     const hasStandingsToShow = (this.config.showStandings && standing && Object.keys(standing).length > 0) === true;
-    const hasTablesToShow = (this.leagueIds[this.activeId].has_table && this.config.showTables) === true;
-    const hasScorersToShow = (this.leagueIds[this.activeId].has_scorers && this.config.showScorers) === true;
+    const hasTablesToShow = (this.leagueIds[this.activeId].has_table && this.config.showTables) === true && Object.keys(tables).length > 0;
+    const hasScorersToShow = (this.leagueIds[this.activeId].has_scorers && this.config.showScorers) === true && Object.keys(scorers).length > 0
 
     if (hasStandingsToShow && this.standingActive) {
       const matches = document.createElement('table');
@@ -206,6 +208,38 @@ Module.register('MMM-SoccerLiveScore', {
               match.appendChild(team2_name);
             }
             matches.appendChild(match);
+
+            if (this.config.showDetails && activeMatch.details && activeMatch.details.length) {
+              const matchDetails = document.createElement('tr');
+              const detail = document.createElement('td');
+              detail.classList.add('MMM-SoccerLiveScore-details');
+              detail.setAttribute('colspan', '7');
+              const p = document.createElement('p');
+              p.classList.add('MMM-SoccerLiveScore-horizontal-infinite-scroll');
+              p.style.animationDelay = -1 * activeMatch.details.length * 0.1 + 's';
+              p.style.animationDuration = this.config.displayTime + 'ms';
+              activeMatch.details.forEach((d) => {
+                const span = document.createElement('span')
+                if(d.type === 1) {
+                  const i = document.createElement('i')
+                  i.classList.add('fa', 'fa-soccer-ball-o');
+                  p.appendChild(i)
+                } else if (d.type === 4) {
+                  const i = document.createElement('i')
+                  i.classList.add('fa', 'ffa-square', 'MMM-SoccerLiveScore-details-red');
+                  p.appendChild(i)
+                } else if ([2, 3].includes(d.type)) {
+                  const i = document.createElement('i')
+                  i.classList.add('fa', 'ffa-square', 'MMM-SoccerLiveScore-details-yellow');
+                  p.appendChild(i)
+                }
+                span.innerHTML += d.minute + ' ' + d.event_text + ' (' + d.team_name + ') '
+                p.appendChild(span)
+              })
+              detail.appendChild(p)
+              matchDetails.appendChild(detail)
+              matches.appendChild(matchDetails)
+            }
           });
         }
       });
@@ -452,7 +486,6 @@ Module.register('MMM-SoccerLiveScore', {
     if (notification === 'LEAGUES') {
       this.idList = Object.keys(payload.leaguesList);
       this.leagueIds = payload.leaguesList;
-      Log.log('>>>>', this.leagueIds);
       if (this.idList && this.idList.length > 0) {
         this.changeLeague();
       }
