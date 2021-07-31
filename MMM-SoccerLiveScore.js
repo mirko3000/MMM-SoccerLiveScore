@@ -218,7 +218,7 @@ Module.register('MMM-SoccerLiveScore', {
                 detail.setAttribute('colspan', '7');
                 const p = document.createElement('p');
                 p.classList.add('MMM-SoccerLiveScore-horizontal-infinite-scroll');
-                p.style.animationDelay = -1 * activeMatch.details.length * 0.1 + 's';
+                p.style.animationDelay = -1 * (activeMatch.details.length || 1) * 0.1 + 's';
                 p.style.animationDuration = this.config.displayTime + 'ms';
                 activeMatch.details.forEach((d) => {
                   const span = document.createElement('span')
@@ -242,7 +242,6 @@ Module.register('MMM-SoccerLiveScore', {
                 matchDetails.appendChild(detail)
                 matches.appendChild(matchDetails)
               }
-
               else if(activeMatch.match_info && activeMatch.match_info && activeMatch.match_info.info_items) {
                 const matchInfo = document.createElement('tr');
                 const info = document.createElement('td');
@@ -509,7 +508,6 @@ Module.register('MMM-SoccerLiveScore', {
     }
 
     setTimeout(() => {
-      console.log(window.innerHeight, wrapper.getBoundingClientRect())
       if(window.innerHeight < wrapper.getBoundingClientRect().height + wrapper.getBoundingClientRect().top) {
         wrapper.classList.add('MMM-SoccerLiveScore-wrapper');
         wrapper.classList.add('MMM-SoccerLiveScore-vertical-infinite-scroll');
