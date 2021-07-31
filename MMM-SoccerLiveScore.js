@@ -508,6 +508,14 @@ Module.register('MMM-SoccerLiveScore', {
       wrapper.innerHTML = 'Loading...';
     }
 
+    setTimeout(() => {
+      console.log(window.innerHeight, wrapper.getBoundingClientRect())
+      if(window.innerHeight < wrapper.getBoundingClientRect().height + wrapper.getBoundingClientRect().top) {
+        wrapper.classList.add('MMM-SoccerLiveScore-wrapper');
+        wrapper.classList.add('MMM-SoccerLiveScore-vertical-infinite-scroll');
+      }
+    }, 200);
+
     return wrapper;
   },
 

@@ -70,8 +70,10 @@ module.exports = NodeHelper.create({
         if ('competitions' in parsedBody) {
           const competitions = parsedBody.competitions;
           leagues.forEach((l) => {
-            const comp = competitions.find((c) => c.id === l);
-            leaguesList[comp.id] = comp;
+            const comp = competitions.find((c) => 'id' in c && c.id === l);
+            if(comp && 'id' in comp) {
+              leaguesList[comp.id] = comp;
+            }
           });
           Object.keys(leaguesList).forEach((id) => {
             self.showStandings && self.getStandings(id);
