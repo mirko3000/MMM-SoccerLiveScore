@@ -1,3 +1,7 @@
+.MMM-SoccerLiveScore-wrapper {
+  overflow: hidden;
+}
+
 .MMM-SoccerLiveScore table {
   overflow: hidden;
 }
@@ -87,11 +91,39 @@
   position: absolute;
   top: 0;
   bottom: 0;
+  z-index: -1;
+}
+
+.MMM-SoccerLiveScore-vertical-infinite-scroll table {
+  animation: MMMSoccerLiveScoreScrollTop 10s infinite linear;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  white-space: nowrap;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.MMM-SoccerLiveScore-vertical-infinite-scroll header {
+  background: var(--color-background);
+  position: relative;
+  z-index: 100;
 }
 
 @keyframes MMMSoccerLiveScoreScrollLeft {
   to {
     transform: translateX(-200%);
+  }
+}
+
+@keyframes MMMSoccerLiveScoreScrollTop {
+  0% {
+    transform: translateY(0%);
+  }
+  50% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0%);
   }
 }
 
