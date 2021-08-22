@@ -119,7 +119,13 @@
   0% {
     transform: translateY(0%);
   }
+  20% {
+    transform: translateY(0%);
+  }
   50% {
+    transform: translateY(-50%);
+  }
+  80% {
     transform: translateY(-50%);
   }
   100% {
