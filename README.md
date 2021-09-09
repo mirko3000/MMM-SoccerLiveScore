@@ -69,162 +69,268 @@ Here is an example of an entry in `config.js`
         <th>ID</th>
     </tr>
     <tr>
-        <th colspan="2">Europe</th>
+        <td colspan="2">AT</td>
     </tr>
     <tr>
-        <td align="left">Champions League</td>
-        <td align="left">1</td>
+        <td>45</td>
+        <td>Ö. Bundesliga</td>
     </tr>
     <tr>
-        <td align="left">Euro League</td>
-        <td align="left">2</td>
-    </tr>  
-    <tr>
-        <td align="left">Euro 20/201</td>
-        <td align="left">4100</td>
-    </tr>  
-    <tr>
-        <th colspan="2">Germany</th>
+        <td>135</td>
+        <td>Zweite Liga</td>
     </tr>
     <tr>
-        <td align="left">1. Liga</td>
-        <td align="left">35</td>
+        <td>445</td>
+        <td>ÖFB Cup</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">CH</td>
     </tr>
     <tr>
-        <td align="left">2. Liga</td>
-        <td align="left">44</td>
+        <td>215</td>
+        <td>Super League</td>
     </tr>
     <tr>
-        <td align="left">3. Liga</td>
-        <td align="left">491</td>
+        <td>216</td>
+        <td>Challenge League</td>
     </tr>
     <tr>
-        <td align="left">DFB-Pokal</td>
-        <td align="left">9</td>
+        <td>399</td>
+        <td>Schweizer Cup</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">DE</td>
     </tr>
     <tr>
-        <td align="left">DFB-Team</td>
-        <td align="left">0</td>
+        <td>9</td>
+        <td>DFB-Pokal</td>
     </tr>
     <tr>
-        <th colspan="2">England</th>
+        <td>35</td>
+        <td>Bundesliga</td>
     </tr>
     <tr>
-        <td align="left">Premier League</td>
-        <td align="left">17</td>
+        <td>44</td>
+        <td>2. Bundesliga</td>
     </tr>
     <tr>
-        <td align="left">FA Cup</td>
-        <td align="left">19</td>
+        <td>491</td>
+        <td>3. Liga</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">EN</td>
     </tr>
     <tr>
-        <td align="left">League Cup</td>
-        <td align="left">21</td>
+        <td>17</td>
+        <td>Premier League</td>
     </tr>
     <tr>
-        <td align="left">3 Lions</td>
-        <td align="left">4</td>
+        <td>19</td>
+        <td>FA Cup</td>
     </tr>
     <tr>
-        <th colspan="2">Spain</th>
+        <td>21</td>
+        <td>Carabao Cup</td>
     </tr>
     <tr>
-        <td align="left">Primera Division</td>
-        <td align="left">8</td>
+        <td>117</td>
+        <td>Championship</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">ES</td>
     </tr>
     <tr>
-        <td align="left">Segunda Division</td>
-        <td align="left">54</td>
+        <td>8</td>
+        <td>La Liga</td>
     </tr>
     <tr>
-        <th colspan="2">Italy</th>
+        <td>54</td>
+        <td>La Liga 2</td>
     </tr>
     <tr>
-        <td align="left">Serie A</td>
-        <td align="left">23</td>
+        <td>329</td>
+        <td>Copa del Rey</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">EU</td>
     </tr>
     <tr>
-        <td align="left">Serie B</td>
-        <td align="left">53</td>
+        <td>1</td>
+        <td>UCL</td>
     </tr>
     <tr>
-        <td align="left">Coppa Italia</td>
-        <td align="left">328</td>
+        <td>2</td>
+        <td>UEL</td>
     </tr>
     <tr>
-        <th colspan="2">France</th>
+        <td>11</td>
+        <td>WC Quali</td>
     </tr>
     <tr>
-        <td align="left">Ligue 1</td>
-        <td align="left">34</td>
+        <td>36</td>
+        <td>Premiership</td>
     </tr>
     <tr>
-        <td align="left">Ligue 2</td>
-        <td align="left">182</td>
-    </tr>
-     <tr>
-        <th colspan="2">Portugal</th>
+        <td>38</td>
+        <td>Pro League</td>
     </tr>
     <tr>
-        <td align="left">Primeira Liga</td>
-        <td align="left">238</td>
+        <td>99</td>
+        <td>2nd Division</td>
     </tr>
     <tr>
-        <td align="left">Segunda Liga</td>
-        <td align="left">239</td>
-    </tr>
-     <tr>
-        <th colspan="2">Austria</th>
+        <td>232</td>
+        <td>Bundesliga (F)</td>
     </tr>
     <tr>
-        <td align="left">Bundesliga</td>
-        <td align="left">45</td>
+        <td>326</td>
+        <td>Belgium Cup</td>
     </tr>
     <tr>
-        <td align="left">Erste Liga</td>
-        <td align="left">135</td>
+        <td>347</td>
+        <td>Scottish Cup</td>
     </tr>
     <tr>
-        <td align="left">ÖFB Cup</td>
-        <td align="left">445</td>
+        <td>686</td>
+        <td>DFB-Pokal (F)</td>
     </tr>
     <tr>
-        <th colspan="2">Switzerland</th>
+        <td>696</td>
+        <td>CL (F)</td>
     </tr>
     <tr>
-        <td align="left">Super League</td>
-        <td align="left">215</td>
+        <td>851</td>
+        <td>Int. Friendlies</td>
     </tr>
     <tr>
-        <td align="left">Challange League</td>
-        <td align="left">216</td>
+        <td>4700</td>
+        <td>RL Nordost</td>
     </tr>
     <tr>
-        <td align="left">Schweitzer Cup</td>
-        <td align="left">399</td>
+        <td>4800</td>
+        <td>RL Bayern</td>
     </tr>
     <tr>
-        <th colspan="2">Turkey</th>
+        <td>4900</td>
+        <td>RL Südwest</td>
     </tr>
     <tr>
-        <td align="left">Süper Lig</td>
-        <td align="left">52</td>
+        <td>5100</td>
+        <td>RL West</td>
     </tr>
     <tr>
-        <td align="left">1. Lig</td>
-        <td align="left">98</td>
+        <td>5200</td>
+        <td>RL Nord</td>
     </tr>
     <tr>
-        <th colspan="2">Netherlands</th>
+        <td>5300</td>
+        <td>UECL</td>
     </tr>
     <tr>
-        <td align="left">Eredivisie</td>
-        <td align="left">37</td>
+        <td>5400</td>
+        <td>Serie C Group A</td>
     </tr>
     <tr>
-        <td align="left">Eerste Divisie</td>
-        <td align="left">131</td>
-    </tr>  
+        <td>5500</td>
+        <td>Serie C Group B</td>
+    </tr>
+    <tr>
+        <td>5600</td>
+        <td>Serie C Group C</td>
+    </tr>
+    <tr>
+        <td>23755</td>
+        <td>Nations League</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">FR</td>
+    </tr>
+    <tr>
+        <td>34</td>
+        <td>Ligue 1</td>
+    </tr>
+    <tr>
+        <td>182</td>
+        <td>Ligue 2</td>
+    </tr>
+    <tr>
+        <td>333</td>
+        <td>Coupe de la Ligue</td>
+    </tr>
+    <tr>
+        <td>335</td>
+        <td>Coupe de France</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">IT</td>
+    </tr>
+    <tr>
+        <td>23</td>
+        <td>Serie A</td>
+    </tr>
+    <tr>
+        <td>53</td>
+        <td>Serie B</td>
+    </tr>
+    <tr>
+        <td>328</td>
+        <td>Coppa Italia</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">NL</td>
+    </tr>
+    <tr>
+        <td>37</td>
+        <td>Eredivisie</td>
+    </tr>
+    <tr>
+        <td>131</td>
+        <td>Eerste Divisie</td>
+    </tr>
+    <tr>
+        <td>330</td>
+        <td>KNVB Beker</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">PT</td>
+    </tr>
+    <tr>
+        <td>238</td>
+        <td>Primeira Liga</td>
+    </tr>
+    <tr>
+        <td>239</td>
+        <td>Segunda Liga</td>
+    </tr>
+    <tr>
+        <td>336</td>
+        <td>Taça de Portugal</td>
+    </tr>
+
+    <tr>
+        <td colspan="2">TR</td>
+    </tr>
+    <tr>
+        <td>52</td>
+        <td>Süper Lig</td>
+    </tr>
+    <tr>
+        <td>96</td>
+        <td>Turkiye Kupasi</td>
+    </tr>
+    <tr>
+        <td>98</td>
+        <td>1. Lig</td>
+    </tr>
 </table>
   
   
