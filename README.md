@@ -83,7 +83,6 @@ Here is an example of an entry in `config.js`
         <td>445</td>
         <td>ÖFB Cup</td>
     </tr>
-
     <tr>
         <td colspan="2">CH</td>
     </tr>
@@ -99,7 +98,6 @@ Here is an example of an entry in `config.js`
         <td>399</td>
         <td>Schweizer Cup</td>
     </tr>
-
     <tr>
         <td colspan="2">DE</td>
     </tr>
@@ -119,7 +117,6 @@ Here is an example of an entry in `config.js`
         <td>491</td>
         <td>3. Liga</td>
     </tr>
-
     <tr>
         <td colspan="2">EN</td>
     </tr>
@@ -139,7 +136,6 @@ Here is an example of an entry in `config.js`
         <td>117</td>
         <td>Championship</td>
     </tr>
-
     <tr>
         <td colspan="2">ES</td>
     </tr>
@@ -155,7 +151,6 @@ Here is an example of an entry in `config.js`
         <td>329</td>
         <td>Copa del Rey</td>
     </tr>
-
     <tr>
         <td colspan="2">EU</td>
     </tr>
@@ -247,7 +242,6 @@ Here is an example of an entry in `config.js`
         <td>23755</td>
         <td>Nations League</td>
     </tr>
-
     <tr>
         <td colspan="2">FR</td>
     </tr>
@@ -267,7 +261,6 @@ Here is an example of an entry in `config.js`
         <td>335</td>
         <td>Coupe de France</td>
     </tr>
-
     <tr>
         <td colspan="2">IT</td>
     </tr>
@@ -283,7 +276,6 @@ Here is an example of an entry in `config.js`
         <td>328</td>
         <td>Coppa Italia</td>
     </tr>
-
     <tr>
         <td colspan="2">NL</td>
     </tr>
@@ -299,7 +291,6 @@ Here is an example of an entry in `config.js`
         <td>330</td>
         <td>KNVB Beker</td>
     </tr>
-
     <tr>
         <td colspan="2">PT</td>
     </tr>
@@ -315,7 +306,6 @@ Here is an example of an entry in `config.js`
         <td>336</td>
         <td>Taça de Portugal</td>
     </tr>
-
     <tr>
         <td colspan="2">TR</td>
     </tr>
