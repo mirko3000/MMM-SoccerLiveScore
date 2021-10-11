@@ -71,7 +71,7 @@ module.exports = NodeHelper.create({
           const competitions = parsedBody.competitions;
           leagues.forEach((l) => {
             const comp = competitions.find((c) => 'id' in c && c.id === l);
-            if(comp && 'id' in comp) {
+            if (comp && 'id' in comp) {
               leaguesList[comp.id] = comp;
             }
           });
@@ -137,14 +137,14 @@ module.exports = NodeHelper.create({
         const fiveMinutes = 60 * 5
         const rounds_detailed = data.rounds_detailed[current_round - 1]
         const start = rounds_detailed.schedule_start - fiveMinutes
-        const end = rounds_detailed.schedule_end + fiveMinutes        
+        const end = rounds_detailed.schedule_end + fiveMinutes
         const now = parseInt(Date.now() / 1000)
         const round_title = rounds_detailed.round_title
 
-        Log.debug(self.name, 'getStandings | start', leagueId, round_title, new Date(start * 1000), start, now >= start);
-        Log.debug(self.name, 'getStandings | end', leagueId, round_title, end > 0 ? new Date(end * 1000) : 0 , end, now <= end);        
-        if(now >= start && end > 0 && now <= end) {
-          Log.debug(self.name, 'start now end', new Date(now * 1000), new Date(start* 1000), new Date(end * 1000))
+        Log.info(self.name, 'getStandings | start', leagueId, round_title, new Date(start * 1000), start, now >= start);
+        Log.info(self.name, 'getStandings | end', leagueId, round_title, end > 0 ? new Date(end * 1000) : 0, end, now <= end);
+        if (now >= start && end > 0 && now <= end) {
+          Log.debug(self.name, 'start now end', new Date(now * 1000), new Date(start * 1000), new Date(end * 1000))
           self.timeoutStandings[leagueId] = setTimeout(function () {
             self.getStandings(leagueId);
           }, refreshTimeout);
@@ -153,14 +153,14 @@ module.exports = NodeHelper.create({
           const delta = start - now;
           refreshTimeout = start;
           self.timeoutStandings[leagueId] = setTimeout(function () {
-              self.getStandings(leagueId);
-            }, refreshTimeout);
+            self.getStandings(leagueId);
+          }, refreshTimeout);
           Log.info(self.name, `next request for league id ${leagueId} on ${new Date(start * 1000)} for ${round_title}`)
         } else if (now > end) {
           Log.debug(self.name, 'now > end', new Date(now * 1000), end > 0 ? new Date(end * 1000) : 0)
         }
 
-        
+
         const doRequest = () => {
           const forLoop = async () => {
             if (self.showDetails) {
@@ -253,7 +253,7 @@ module.exports = NodeHelper.create({
             data = JSON.parse(body);
             Log.debug(self.name, 'getDetails | data', JSON.stringify(data, null, 2));
             details = data.data || [];
-          } catch (e){
+          } catch (e) {
             Log.error(body);
             Log.error(e);
           }
