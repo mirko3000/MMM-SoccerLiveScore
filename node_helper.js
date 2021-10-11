@@ -136,15 +136,15 @@ module.exports = NodeHelper.create({
         const start = rounds_detailed.schedule_start
         const stop = rounds_detailed.schedule_stop
 
-        Log.debug(self.name, 'getStandings | start', new Date(start * 1000), start);
-        Log.debug(self.name, 'getStandings | end', new Date(stop * 1000), stop);
+        Log.info(self.name, 'getStandings | start', new Date(start * 1000), start);
+        Log.info(self.name, 'getStandings | end', new Date(stop * 1000), stop);
         const now = Date.now() / 1000
         if(start > now && stop < now) {
-          Log.debug(self.name, 'start now stop', new Date(now), new Date(start), new Date(stop))
+          Log.info(self.name, 'start now stop', new Date(now), new Date(start), new Date(stop))
         } else if (start < now) {
-          Log.debug(self.name, 'wait for start', new Date(now), new Date(start))
+          Log.info(self.name, 'wait for start', new Date(now), new Date(start))
         } else {
-          Log.debug(self.name, 'end', new Date(now), new Date(stop))
+          Log.info(self.name, 'end', new Date(now), new Date(stop))
         }
 
         const forLoop = async () => {
