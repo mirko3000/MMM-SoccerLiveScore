@@ -148,7 +148,7 @@ module.exports = NodeHelper.create({
           self.timeoutStandings[leagueId] = setTimeout(function () {
             self.getStandings(leagueId);
           }, refreshTimeout);
-          Log.info(self.name, `next request for league id ${leagueId} on ${new Date((now + refreshTimeout) * 1000)} for ${round_title}`)
+          Log.info(self.name, `next request for league id ${leagueId} on ${new Date((now * 1000 + refreshTimeout))} for ${round_title}`)
         } else if (now < start) {
           const delta = start - now;
           refreshTimeout = start;
