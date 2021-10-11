@@ -131,6 +131,22 @@ module.exports = NodeHelper.create({
         Log.debug(self.name, 'getStandings | refresh_time', data.refresh_time, self.refreshTime);
         const standings = data;
 
+        const current_round = data.current_round;
+        const rounds_detailed = data.rounds_detailed[current_round]
+        const start = rounds_detailed.schedule_start
+        const stop = rounds_detailed.schedule_stop
+
+        Log.debug(self.name, 'getStandings | start', new Date(start * 1000), start);
+        Log.debug(self.name, 'getStandings | end', new Date(stop * 1000), stop);
+        const now = Date.now() / 1000
+        if(start > now && stop < now) {
+          Log.debug(self.name, 'start now stop', new Date(now), new Date(start), new Date(stop))
+        } else if (start < now) {
+          Log.debug(self.name, 'wait for start', new Date(now), new Date(start))
+        } else {
+          Log.debug(self.name, 'end', new Date(now), new Date(stop))
+        }
+
         const forLoop = async () => {
           if (self.showDetails) {
             for (let s of standings.data) {
@@ -144,9 +160,9 @@ module.exports = NodeHelper.create({
                   const match_info = d && d.filter(t => t.type === 'match_info');
                   Log.debug(self.name, 'getStandings | match_info', JSON.stringify(match_info, null, 2));
                   m.match_info = match_info && match_info[0] ? match_info[0].match_info : []
-                };
+                }
               }
-            };
+            }
           }
         }
 
