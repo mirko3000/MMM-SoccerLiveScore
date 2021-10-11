@@ -137,14 +137,14 @@ module.exports = NodeHelper.create({
         const stop = rounds_detailed.schedule_stop
 
         Log.info(self.name, 'getStandings | start', leagueId, new Date(start * 1000), start);
-        Log.info(self.name, 'getStandings | end', leagueId, new Date(stop * 1000), stop);
+        Log.info(self.name, 'getStandings | end', leagueId, stop > 0 ? new Date(stop * 1000) : 0 , stop);
         const now = Date.now() / 1000
-        if(start > now && stop < now) {
+        if(start > now && stop > 0 && stop < now) {
           Log.info(self.name, 'start now stop', new Date(now), new Date(start* 1000), new Date(stop))
         } else if (start < now) {
           Log.info(self.name, 'wait for start', new Date(now), new Date(start * 1000))
         } else {
-          Log.info(self.name, 'end', new Date(now), new Date(stop * 1000))
+          Log.info(self.name, 'end', new Date(now), stop > 0 ? new Date(stop * 1000) : 0)
         }
 
         const forLoop = async () => {
