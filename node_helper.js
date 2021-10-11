@@ -132,7 +132,7 @@ module.exports = NodeHelper.create({
         const standings = data;
 
         const current_round = data.current_round;
-        const rounds_detailed = data.rounds_detailed[current_round]
+        const rounds_detailed = data.rounds_detailed[current_round - 1]
         const start = rounds_detailed.schedule_start
         const stop = rounds_detailed.schedule_stop
 
