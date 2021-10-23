@@ -1,3 +1,10 @@
+.MMM-SoccerLiveScore__api-info {
+  font-size: 10px;
+  text-align: right;
+  font-style: italic;
+  color: var(--color-text);
+}
+
 .MMM-SoccerLiveScore-wrapper {
   overflow: hidden;
 }

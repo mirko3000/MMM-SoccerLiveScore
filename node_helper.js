@@ -140,15 +140,17 @@ module.exports = NodeHelper.create({
         const end = rounds_detailed.schedule_end + fiveMinutes
         const now = parseInt(Date.now() / 1000)
         const round_title = rounds_detailed.round_title
+        let nextRequest = null
 
         Log.info(self.name, 'getStandings | start', leagueId, round_title, new Date(start * 1000), start, now >= start);
         Log.info(self.name, 'getStandings | end', leagueId, round_title, end > 0 ? new Date(end * 1000) : 0, end, now <= end);
         if (now >= start && end > 0 && now <= end) {
-          Log.debug(self.name, 'start now end', new Date(now * 1000), new Date(start * 1000), new Date(end * 1000))
+          Log.debug(self.name, 'start now end', new Date(start * 1000), new Date(now * 1000), new Date(end * 1000))
           self.timeoutStandings[leagueId] = setTimeout(function () {
             self.getStandings(leagueId);
           }, refreshTimeout);
           Log.info(self.name, `next request for league id ${leagueId} on ${new Date((now * 1000 + refreshTimeout))} for ${round_title}`)
+          nextRequest = new Date((now * 1000 + refreshTimeout));
         } else if (now < start) {
           const delta = start - now;
           refreshTimeout = start;
@@ -156,8 +158,10 @@ module.exports = NodeHelper.create({
             self.getStandings(leagueId);
           }, refreshTimeout);
           Log.info(self.name, `next request for league id ${leagueId} on ${new Date(start * 1000)} for ${round_title}`)
+          nextRequest = new Date(start * 1000);
         } else if (now > end) {
           Log.debug(self.name, 'now > end', new Date(now * 1000), end > 0 ? new Date(end * 1000) : 0)
+          nextRequest = new Date(end * 1000);
         }
 
 
@@ -185,11 +189,8 @@ module.exports = NodeHelper.create({
             self.sendSocketNotification(self.name + '-STANDINGS', {
               leagueId: leagueId,
               standings: standings,
+              nextRequest: nextRequest
             });
-
-            // self.timeoutStandings[leagueId] = setTimeout(function () {
-            //   self.getStandings(leagueId);
-            // }, refreshTimeout);
           })
         }
 
