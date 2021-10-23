@@ -13,6 +13,7 @@ Module.register('MMM-SoccerLiveScore', {
   standings: {},
   tables: {},
   scorers: {},
+  nextRequest: [],
 
   scorersActive: false,
   standingActive: true,
@@ -117,12 +118,21 @@ Module.register('MMM-SoccerLiveScore', {
     const hasTablesToShow = (this.leagueIds[this.activeId].has_table && this.config.showTables) === true && Array.isArray(tables) && tables.length > 0;
     const hasScorersToShow = (this.leagueIds[this.activeId].has_scorers && this.config.showScorers) === true && Array.isArray(scorers) && scorers.length > 0
 
+    let nextRequest = null;
+    if (this.nextRequest[this.activeId]) {
+      const tmp = new Date(this.nextRequest[this.activeId])
+      const date = tmp.toLocaleDateString();
+      const time = tmp.toLocaleTimeString();
+      nextRequest = `${date} ${time}`
+    }
+
     if (hasStandingsToShow && this.standingActive) {
       const matches = document.createElement('table');
       matches.className = 'xsmall';
       const round = standing && 'current_round' in standing ? standing.current_round : null;
       const roundLabel = round && 'rounds' in standing ? ' | ' + standing.rounds[round - 1] : '';
       const title = document.createElement('header');
+
       title.innerHTML = (this.leagueIds[this.activeId].name + roundLabel).trim();
       wrapper.appendChild(title);
 
@@ -211,7 +221,7 @@ Module.register('MMM-SoccerLiveScore', {
 
             if (this.config.showDetails) {
               const hasDetails = activeMatch.details && activeMatch.details.length
-              if(hasDetails) {
+              if (hasDetails) {
                 const matchDetails = document.createElement('tr');
                 const detail = document.createElement('td');
                 detail.classList.add('MMM-SoccerLiveScore-details');
@@ -222,7 +232,7 @@ Module.register('MMM-SoccerLiveScore', {
                 p.style.animationDuration = this.config.displayTime + 'ms';
                 activeMatch.details.forEach((d) => {
                   const span = document.createElement('span')
-                  if(d.type === 1) {
+                  if (d.type === 1) {
                     const i = document.createElement('i')
                     i.classList.add('fa', 'fa-soccer-ball-o');
                     p.appendChild(i)
@@ -242,7 +252,7 @@ Module.register('MMM-SoccerLiveScore', {
                 matchDetails.appendChild(detail)
                 matches.appendChild(matchDetails)
               }
-              else if(activeMatch.match_info && activeMatch.match_info && activeMatch.match_info.info_items) {
+              else if (activeMatch.match_info && activeMatch.match_info && activeMatch.match_info.info_items) {
                 const matchInfo = document.createElement('tr');
                 const info = document.createElement('td');
                 info.classList.add('MMM-SoccerLiveScore-match_info');
@@ -252,7 +262,7 @@ Module.register('MMM-SoccerLiveScore', {
                 p.style.animationDelay = -1 * activeMatch.match_info.info_items.length * 0.1 + 's';
                 p.style.animationDuration = this.config.displayTime + 'ms';
                 activeMatch.match_info.info_items.forEach(it => {
-                  if(it.info_type === 'venue') {
+                  if (it.info_type === 'venue') {
                     const i = document.createElement('i')
                     i.classList.add('fa', 'fa-ring');
                     p.appendChild(i)
@@ -275,13 +285,22 @@ Module.register('MMM-SoccerLiveScore', {
       });
       wrapper.appendChild(matches);
 
+      const tr = document.createElement('tr')
+      const td = document.createElement('td')
+      td.setAttribute('colspan', '7');
+      td.classList.add('MMM-SoccerLiveScore__api-info');
+      td.innerHTML = 'Next API request: ' + nextRequest
+      tr.appendChild(td)
+      matches.appendChild(tr);
+      console.log(matches)
+
       this.standingActive = (!hasTablesToShow && !hasScorersToShow) || false;
       this.tableActive = hasTablesToShow;
       this.scorersActive = !hasTablesToShow && hasScorersToShow;
     } else if (hasTablesToShow && this.tableActive) {
       tables.forEach((t) => {
         const table = t.table;
-        if(table) {
+        if (table) {
           const places = document.createElement('table');
           places.className = 'xsmall';
           const title = document.createElement('header');
@@ -508,7 +527,7 @@ Module.register('MMM-SoccerLiveScore', {
     }
 
     setTimeout(() => {
-      if(window.innerHeight < wrapper.getBoundingClientRect().height + wrapper.getBoundingClientRect().top) {
+      if (window.innerHeight < wrapper.getBoundingClientRect().height + wrapper.getBoundingClientRect().top) {
         wrapper.classList.add('MMM-SoccerLiveScore-wrapper');
         wrapper.classList.add('MMM-SoccerLiveScore-vertical-infinite-scroll');
       }
@@ -531,6 +550,7 @@ Module.register('MMM-SoccerLiveScore', {
       }
     } else if (notification === this.name + '-STANDINGS') {
       this.standings[payload.leagueId] = payload.standings;
+      this.nextRequest[payload.leagueId] = payload.nextRequest
     } else if (notification === this.name + '-TABLE') {
       this.tables[payload.leagueId] = payload.table;
     } else if (notification === this.name + '-SCORERS') {
