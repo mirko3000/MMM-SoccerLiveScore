@@ -199,14 +199,14 @@ Module.register('MMM-SoccerLiveScore', {
             match.appendChild(colon);
             match.appendChild(team2_score);
 
-            if (![0, 100, 110, 120, 60].includes(activeMatch.status)) {
-              team1_score.classList.add('MMM-SoccerLiveScore-active');
-              colon.classList.add('MMM-SoccerLiveScore-active');
-              team2_score.classList.add('MMM-SoccerLiveScore-active');
-            } else if ([60, 90].includes(activeMatch.status)) {
+            if ([60, 90].includes(activeMatch.status)) {
               team1_score.classList.add('MMM-SoccerLiveScore-postponed');
               colon.classList.add('MMM-SoccerLiveScore-postponed');
               team2_score.classList.add('MMM-SoccerLiveScore-postponed');
+            } else if (![0, 100, 110, 120].includes(activeMatch.status)) {
+              team1_score.classList.add('MMM-SoccerLiveScore-active');
+              colon.classList.add('MMM-SoccerLiveScore-active');
+              team2_score.classList.add('MMM-SoccerLiveScore-active');
             }
 
             if (this.config.showLogos) {
