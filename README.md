@@ -55,13 +55,13 @@ Here is an example of an entry in `config.js`
   header: 'Live-Scores',
   config: {
     leagues: [35, 1, 9],
-      showNames: true,
-      showLogos: true,
-      displayTime: 60 * 1000,
-      showStandings: true,
-      showTables: true,
-      showScorers: true,
-      language: 'en', // supported values are en, de, it
+    showNames: true,
+    showLogos: true,
+    displayTime: 60 * 1000,
+    showStandings: true,
+    showTables: true,
+    showScorers: true,
+    language: 'en', // supported values are en, de, it
   }
 },
 ```

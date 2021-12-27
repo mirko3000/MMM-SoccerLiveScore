@@ -6,7 +6,7 @@
  */
 
 const NodeHelper = require('node_helper');
-const Log = require('../../js/logger.js');
+const Log = require("logger");
 const fetch = require('node-fetch');
 
 module.exports = NodeHelper.create({
@@ -113,8 +113,8 @@ module.exports = NodeHelper.create({
     }
   },
 
-  getStandings: async function (leagueId) {
-    const url = `${this.baseURL}/competitions/${leagueId.toString()}/matches/round/0`;
+  getStandings: async function (leagueId, round = 0) {
+    const url = `${this.baseURL}/competitions/${leagueId.toString()}/matches/round/${round}`;
     Log.debug(this.name, 'getStandings', url);
 
     const data = await this.doPost(url)
@@ -140,8 +140,11 @@ module.exports = NodeHelper.create({
         refreshTimeout = 24 * 12 * fiveMinutes;
         nextRequest = new Date((now * 1000 + refreshTimeout));
       } else {
-        const start = times.reduce((prev, curr) => (Math.abs(curr - now) < Math.abs(prev - now) ? curr : prev)) - fiveMinutes
-        const end = times[times.length - 1] + fiveMinutes
+        let start = times.reduce((prev, curr) => (Math.abs(curr - now) < Math.abs(prev - now) ? curr : prev)) // closest time to now
+        let startIndex = times.findIndex(t => t === start)
+        const end = startIndex === times.length - 1 ? rounds_detailed.schedule_end : times[times.length - 1] += fiveMinutes
+
+        start -= fiveMinutes
 
         // now is in between the start and the end time of the event
         if (now >= start && end > 0 && now <= end) {
@@ -170,7 +173,7 @@ module.exports = NodeHelper.create({
         }
       }
 
-      const MAX_TIMEOUT_VALUE = 2147483647
+      const MAX_TIMEOUT_VALUE = 2147483647 // https://stackoverflow.com/a/56718027/448660
       refreshTimeout = refreshTimeout > MAX_TIMEOUT_VALUE ? MAX_TIMEOUT_VALUE : refreshTimeout
       this.timeoutStandings[leagueId] = setTimeout(() => {
         this.getStandings(leagueId);
@@ -251,13 +254,13 @@ module.exports = NodeHelper.create({
     let details = []
     return new Promise(async (resolve, _reject) => {
       const data = await this.doPost(url)
-      if (data) {
+      if (data && data.data) {
         Log.debug(this.name, 'getDetails | data', JSON.stringify(data, null, 2));
         details = data.data || [];
         resolve(details);
       } else {
         resolve([]);
-        Log.error(this.name, 'getDetails', data);
+        Log.error(this.name, 'getDetails', url, data);
       }
     });
   },
