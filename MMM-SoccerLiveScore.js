@@ -266,16 +266,16 @@ Module.register('MMM-SoccerLiveScore', {
                 matchDetails.appendChild(detail)
                 matches.appendChild(matchDetails)
               }
-              else if (activeMatch.match_info && activeMatch.match_info && activeMatch.match_info.info_items) {
+              else if (Array.isArray(activeMatch.match_info) && activeMatch.match_info.length > 0) {
                 const matchInfo = document.createElement('tr');
                 const info = document.createElement('td');
                 info.classList.add('MMM-SoccerLiveScore-match_info');
                 info.setAttribute('colspan', '7');
                 const p = document.createElement('p');
                 p.classList.add('MMM-SoccerLiveScore-horizontal-infinite-scroll');
-                p.style.animationDelay = -1 * activeMatch.match_info.info_items.length * 0.1 + 's';
+                p.style.animationDelay = -1 * activeMatch.match_info.length * 0.1 + 's';
                 p.style.animationDuration = (parseFloat(this.config.displayTime) > 20 * 1000 ? 20 * 1000 : this.config.displayTime) + 'ms';
-                activeMatch.match_info.info_items.forEach(it => {
+                activeMatch.match_info.forEach(it => {
                   if (it.info_type === 'venue') {
                     const i = document.createElement('i')
                     i.classList.add('fa', 'fa-ring');

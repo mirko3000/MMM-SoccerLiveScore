@@ -84,13 +84,15 @@ module.exports = NodeHelper.create({
             this.leaguesList[comp.id] = comp;
           }
         });
+
         Object.keys(this.leaguesList).forEach((id) => {
-          this.showStandings && this.getStandings(id);
+          this.showStandings && this.getStandings(id, undefined);
           this.showTables && this.leaguesList[id].has_table && this.getTable(id);
           this.showScorers && this.leaguesList[id].has_scorers && this.getScorers(id);
         });
       }
     }
+    Log.debug(this.name, 'getLeagueIds', this.leaguesList)
     this.sendSocketNotification(this.name + '-LEAGUES', { leaguesList: this.leaguesList });
   },
 
@@ -115,34 +117,64 @@ module.exports = NodeHelper.create({
 
   getStandings: async function (leagueId, round = 0) {
     const url = `${this.baseURL}/competitions/${leagueId.toString()}/matches/round/${round}`;
-    Log.debug(this.name, 'getStandings', url);
+    Log.info(this.name, 'getStandings', url);
 
     const data = await this.doPost(url)
     if (data) {
       const standings = data;
 
-      const matches = standings.data.filter(s => s.type === 'matches')
-      const times = [...new Set(matches.map(m => m.time))].sort()
+      const allMatches = standings.data.filter(s => s.type === 'matches')
+      const allTimes = [...new Set(allMatches.map(m => m.time))].sort()
+
+      const tmp = {}
+      allTimes.forEach(t => {
+        const matchesAtSameTime = allMatches.filter(m => m.time === t)
+        const matchesTmp = [].concat.apply([], matchesAtSameTime.map(m => m.matches));
+        const toPlayMatches = matchesTmp.filter(m => ![60, 90, 100, 110, 120].includes(m.status))
+        if (Array.isArray(toPlayMatches) && toPlayMatches.length > 0) {
+          tmp[t] = toPlayMatches
+        }
+      })
+
+      let times = [...new Set(Object.keys(tmp).map(t => parseInt(t)))].sort()
 
       Log.debug(this.name, 'getStandings | data', JSON.stringify(data, null, 2));
       this.refreshTime = (standings.refresh_time || 5 * 60) * 1000;
       Log.debug(this.name, 'getStandings | refresh_time', data.refresh_time, this.refreshTime);
 
       const fiveMinutes = 60 * 5
+      const hundredTwentyMinutes = fiveMinutes * 24;
       const current_round = standings.current_round;
       const rounds_detailed = data.rounds_detailed[current_round - 1]
-      const now = parseInt(Date.now() / 1000)
+      const now = new Date(2022, 0, 3, 19, 31).getTime() / 1000
       let nextRequest = null
 
       let refreshTimeout = this.refreshTime;
 
+      const nextRoundRequest = () => {
+        const selectable_rounds = standings.selectable_rounds;
+        let next_round = current_round;
+        let next_start = now + 24 * 12 * fiveMinutes;
+        let deltaNowNextRequest = next_start * 1000
+
+        if (next_round <= selectable_rounds) {
+          if (data.rounds_detailed[current_round].schedule_start !== 0) {
+            next_start = data.rounds_detailed[current_round].schedule_start - fiveMinutes
+            deltaNowNextRequest = next_start * 1000
+          }
+        }
+
+        nextRequest = new Date(deltaNowNextRequest)
+        refreshTimeout = deltaNowNextRequest;
+      }
+
       if (!rounds_detailed.schedule_start && !rounds_detailed.schedule_end) {
-        refreshTimeout = 24 * 12 * fiveMinutes;
+        refreshTimeout = 24 * 12 * fiveMinutes; // one day
         nextRequest = new Date((now * 1000 + refreshTimeout));
-      } else {
-        let start = times.reduce((prev, curr) => (Math.abs(curr - now) < Math.abs(prev - now) ? curr : prev)) // closest time to now
+      } else if (times.length >= 1) {
+        let start = times.length === 1 ? times[0] : times.reduce((prev, curr) => (Math.abs(curr - now) < Math.abs(prev - now) ? curr : prev)) // closest time to now
         let startIndex = times.findIndex(t => t === start)
-        const end = startIndex === times.length - 1 ? rounds_detailed.schedule_end : times[times.length - 1] += fiveMinutes
+        const end = startIndex === times.length - 1 ? start + hundredTwentyMinutes : times[times.length - 1] += fiveMinutes
 
         start -= fiveMinutes
 
@@ -156,27 +188,16 @@ module.exports = NodeHelper.create({
           nextRequest = new Date(start * 1000);
           // now is past the end of the event
         } else if (now > end) {
-          const selectable_rounds = standings.selectable_rounds;
-          let next_round = current_round;
-          let next_start = now + 24 * 12 * fiveMinutes;
-          let deltaNowNextRequest = next_start * 1000
-
-          if (next_round <= selectable_rounds) {
-            if (data.rounds_detailed[current_round].schedule_start !== 0) {
-              next_start = data.rounds_detailed[current_round].schedule_start - fiveMinutes
-              deltaNowNextRequest = next_start * 1000
-            }
-          }
-
-          nextRequest = new Date(deltaNowNextRequest)
-          refreshTimeout = deltaNowNextRequest;
+          nextRoundRequest();
         }
+      } else {
+        nextRoundRequest();
       }
 
       const MAX_TIMEOUT_VALUE = 2147483647 // https://stackoverflow.com/a/56718027/448660
       refreshTimeout = refreshTimeout > MAX_TIMEOUT_VALUE ? MAX_TIMEOUT_VALUE : refreshTimeout
       this.timeoutStandings[leagueId] = setTimeout(() => {
-        this.getStandings(leagueId);
+        this.getStandings(leagueId, round);
       }, refreshTimeout);
 
       const round_title = rounds_detailed.round_title
@@ -192,11 +213,13 @@ module.exports = NodeHelper.create({
                 for (let m of matches) {
                   const d = await this.getDetails(leagueId, m.match_id);
                   const details = d && d.filter(t => t.type === 'details');
-                  Log.debug(this.name, 'getStandings | details', JSON.stringify(details, null, 2));
+                  Log.debug(this.name, 'getStandings | details', m.match_id, JSON.stringify(details, null, 2));
                   m.details = details && details[0] ? details[0].details : []
-                  const match_info = d && d.filter(t => t.type === 'match_info');
-                  Log.debug(this.name, 'getStandings | match_info', JSON.stringify(match_info, null, 2));
-                  m.match_info = match_info && match_info[0] ? match_info[0].match_info : []
+                  let match_info = d && d.filter(t => t.type === 'match_info');
+                  match_info = match_info && match_info[0] ? match_info[0].match_info : []
+                  match_info = match_info.info_items.filter(m => !['stream', 'promotion'].includes(m.info_type))
+                  Log.debug(this.name, 'getStandings | match_info', m.match_id, JSON.stringify(match_info, null, 2));
+                  m.match_info = match_info
                 }
               }
             }
@@ -217,14 +240,14 @@ module.exports = NodeHelper.create({
     } else {
       Log.error(this.name, 'getStandings', data);
       this.timeoutStandings[leagueId] = setTimeout(() => {
-        this.getStandings(leagueId);
+        this.getStandings(leagueId, round);
       }, 5 * 60 * 1000);
     }
   },
 
   getScorers: async function (leagueId) {
     const url = `${this.baseURL}/competitions/${leagueId.toString()}/scorers`;
-    Log.debug(this.name, 'getScorers', url);
+    Log.info(this.name, 'getScorers', url);
 
     const data = await this.doPost(url)
     if (data) {
