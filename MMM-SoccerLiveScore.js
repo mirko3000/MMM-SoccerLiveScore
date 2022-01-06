@@ -199,7 +199,7 @@ Module.register('MMM-SoccerLiveScore', {
             match.appendChild(colon);
             match.appendChild(team2_score);
 
-            if ([60, 90].includes(activeMatch.status)) {
+            if ([60, 70, 90].includes(activeMatch.status)) {
               team1_score.classList.add('MMM-SoccerLiveScore-postponed');
               colon.classList.add('MMM-SoccerLiveScore-postponed');
               team2_score.classList.add('MMM-SoccerLiveScore-postponed');
