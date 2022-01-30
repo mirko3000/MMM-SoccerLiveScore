@@ -149,7 +149,7 @@ module.exports = NodeHelper.create({
       const current_round = standings.current_round;
       const rounds_detailed = data.rounds_detailed[current_round - 1]
       // const now = new Date(2022, 0, 3, 19, 31).getTime() / 1000
-      const now = new Date()
+      const now = new Date().getTime() / 1000
       let nextRequest = null
 
       let refreshTimeout = this.refreshTime;
