@@ -102,8 +102,10 @@ module.exports = NodeHelper.create({
     const data = await this.doPost(url)
     if (data) {
       Log.debug(this.name, 'getTable | data', JSON.stringify(data, null, 2));
-      this.refreshTime = (data.refresh_time || 5 * 60) * 1000;
-      Log.debug(this.name, 'getTable | refresh_time', data.refresh_time, this.refreshTime);
+      if (!this.showStandings) {
+        this.refreshTime = (data.refresh_time || 5 * 60) * 1000;
+      }
+      Log.info(this.name, 'getTable | refresh_time', data.refresh_time, this.refreshTime);
       const tables = data.data.filter((d) => d.type === 'table' && d.table);
       this.sendSocketNotification(this.name + '-TABLE', {
         leagueId: leagueId,
@@ -130,7 +132,7 @@ module.exports = NodeHelper.create({
       allTimes.forEach(t => {
         const matchesAtSameTime = allMatches.filter(m => m.time === t)
         const matchesTmp = [].concat.apply([], matchesAtSameTime.map(m => m.matches));
-        const toPlayMatches = matchesTmp.filter(m => ![60, 90, 100, 110, 120].includes(m.status))
+        const toPlayMatches = matchesTmp.filter(m => ![60, 70, 90, 100, 110, 120].includes(m.status))
         if (Array.isArray(toPlayMatches) && toPlayMatches.length > 0) {
           tmp[t] = toPlayMatches
         }
@@ -146,7 +148,8 @@ module.exports = NodeHelper.create({
       const hundredTwentyMinutes = fiveMinutes * 24;
       const current_round = standings.current_round;
       const rounds_detailed = data.rounds_detailed[current_round - 1]
-      const now = new Date(2022, 0, 3, 19, 31).getTime() / 1000
+      // const now = new Date(2022, 0, 3, 19, 31).getTime() / 1000
+      const now = new Date()
       let nextRequest = null
 
       let refreshTimeout = this.refreshTime;
@@ -227,6 +230,7 @@ module.exports = NodeHelper.create({
         }
 
         forLoop().then(() => {
+          this.refreshTime = refreshTimeout
           this.sendSocketNotification(this.name + '-STANDINGS', {
             leagueId: leagueId,
             standings: standings,
@@ -252,7 +256,9 @@ module.exports = NodeHelper.create({
     const data = await this.doPost(url)
     if (data) {
       Log.debug(this.name, 'getScorers | data', JSON.stringify(data, null, 2));
-      this.refreshTime = (data.refresh_time || 5 * 60) * 1000;
+      if (!this.showStandings) {
+        this.refreshTime = (data.refresh_time || 5 * 60) * 1000;
+      }
       Log.debug(this.name, 'getScorers | refresh_time', data.refresh_time, this.refreshTime);
       const scorers = data.data.filter(d => d.type === 'scorers' && d.scorers) || [];
       this.sendSocketNotification(this.name + '-SCORERS', {
