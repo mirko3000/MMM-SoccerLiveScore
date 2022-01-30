@@ -105,12 +105,15 @@ module.exports = NodeHelper.create({
       if (!this.showStandings) {
         this.refreshTime = (data.refresh_time || 5 * 60) * 1000;
       }
-      Log.info(this.name, 'getTable | refresh_time', data.refresh_time, this.refreshTime);
       const tables = data.data.filter((d) => d.type === 'table' && d.table);
       this.sendSocketNotification(this.name + '-TABLE', {
         leagueId: leagueId,
         table: tables,
       });
+
+      const nextRequest = new Date(new Date().getTime() + this.refreshTime)
+      Log.info(this.name, `getTable | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest}`)
+
       this.timeoutTable[leagueId] = setTimeout(() => {
         this.getTable(leagueId);
       }, this.refreshTime);
@@ -148,10 +151,8 @@ module.exports = NodeHelper.create({
       const hundredTwentyMinutes = fiveMinutes * 24;
       const current_round = standings.current_round;
       const rounds_detailed = data.rounds_detailed[current_round - 1]
-      // const now = new Date(2022, 0, 3, 19, 31).getTime() / 1000
       const now = new Date().getTime() / 1000
       let nextRequest = null
-
       let refreshTimeout = this.refreshTime;
 
       const nextRoundRequest = () => {
@@ -166,7 +167,6 @@ module.exports = NodeHelper.create({
             deltaNowNextRequest = next_start * 1000
           }
         }
-
         nextRequest = new Date(deltaNowNextRequest)
         refreshTimeout = deltaNowNextRequest;
       }
@@ -204,7 +204,7 @@ module.exports = NodeHelper.create({
       }, refreshTimeout);
 
       const round_title = rounds_detailed.round_title
-      Log.info(this.name, `next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest} for ${round_title}`)
+      Log.info(this.name, `getStandings | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest} for ${round_title}`)
 
 
       const doRequest = () => {
@@ -268,6 +268,9 @@ module.exports = NodeHelper.create({
       this.timeoutScorers[leagueId] = setTimeout(() => {
         this.getScorers(leagueId);
       }, this.refreshTime);
+
+      const nextRequest = new Date(new Date().getTime() + this.refreshTime)
+      Log.info(this.name, `getScorers | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest}`)
     } else {
       Log.error(this.name, 'getScorers', data);
       this.timeoutScorers[leagueId] = setTimeout(() => {
