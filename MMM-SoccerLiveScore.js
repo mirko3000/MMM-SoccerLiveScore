@@ -286,7 +286,7 @@ Module.register('MMM-SoccerLiveScore', {
                     p.appendChild(i)
                   }
                   const span = document.createElement('span')
-                  span.innerHTML = ' ' + it.subtitle + ' ' + it.title + ' '
+                  span.innerHTML = ' ' + (it.subtitle ? it.subtitle + ' ' : '') + (it.title ? it.title + ' ' : '')
                   p.appendChild(span)
                 })
                 info.appendChild(p)
