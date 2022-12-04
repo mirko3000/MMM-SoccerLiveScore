@@ -11,6 +11,7 @@ const fetch = require('node-fetch');
 
 module.exports = NodeHelper.create({
   refreshTime: 2 * 60 * 1000,
+  refreshTimeout: {},
   timeoutStandings: [],
   timeoutTable: [],
   timeoutScorers: [],
@@ -72,7 +73,7 @@ module.exports = NodeHelper.create({
   getLeagueIds: async function (leagues) {
     this.clearTimeouts()
     const url = `${this.baseURL}/competitions`;
-    Log.debug(this.name, 'getLeagueIds', url);
+    Log.info(this.name, 'getLeagueIds', url, leagues.join(', '));
     const data = await this.doPost(url)
     this.leaguesList = {};
     if (data) {
@@ -85,8 +86,8 @@ module.exports = NodeHelper.create({
           }
         });
 
-        Object.keys(this.leaguesList).forEach((id) => {
-          this.showStandings && this.getStandings(id, undefined);
+        Object.keys(this.leaguesList).forEach(async (id) => {
+          await this.getStandings(id, undefined);
           this.showTables && this.leaguesList[id].has_table && this.getTable(id);
           this.showScorers && this.leaguesList[id].has_scorers && this.getScorers(id);
         });
@@ -103,7 +104,7 @@ module.exports = NodeHelper.create({
     if (data) {
       Log.debug(this.name, 'getTable | data', JSON.stringify(data, null, 2));
       if (!this.showStandings) {
-        this.refreshTime = (data.refresh_time || 5 * 60) * 1000;
+        this.refreshTimeout[leagueId] = (data.refresh_time || 5 * 60) * 1000;
       }
       const tables = data.data.filter((d) => d.type === 'table' && d.table);
       this.sendSocketNotification(this.name + '-TABLE', {
@@ -111,18 +112,18 @@ module.exports = NodeHelper.create({
         table: tables,
       });
 
-      const nextRequest = new Date(new Date().getTime() + this.refreshTime)
+      const nextRequest = new Date(new Date().getTime() + this.refreshTimeout[leagueId])
       Log.info(this.name, `getTable | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest}`)
 
       this.timeoutTable[leagueId] = setTimeout(() => {
         this.getTable(leagueId);
-      }, this.refreshTime);
+      }, this.refreshTimeout[leagueId]);
     }
   },
 
   getStandings: async function (leagueId, round = 0) {
     const url = `${this.baseURL}/competitions/${leagueId.toString()}/matches/round/${round}`;
-    Log.info(this.name, 'getStandings', url);
+    Log.debug(this.name, 'getStandings', url);
 
     const data = await this.doPost(url)
     if (data) {
@@ -153,13 +154,13 @@ module.exports = NodeHelper.create({
       const rounds_detailed = data.rounds_detailed[current_round - 1]
       const now = new Date().getTime() / 1000
       let nextRequest = null
-      let refreshTimeout = this.refreshTime;
+      this.refreshTimeout[leagueId] = this.refreshTime;
 
       const nextRoundRequest = () => {
         const selectable_rounds = standings.selectable_rounds;
         let next_round = current_round;
-        let next_start = now + 24 * 12 * fiveMinutes;
-        let deltaNowNextRequest = next_start * 1000
+        let next_start = now + 24 * 12 * fiveMinutes; // now + 24 hours in minutes
+        let deltaNowNextRequest = next_start * 1000;
 
         if (next_round <= selectable_rounds) {
           const scheduleStart = data.rounds_detailed[current_round] && data.rounds_detailed[current_round].schedule_start || 0
@@ -169,12 +170,12 @@ module.exports = NodeHelper.create({
           }
         }
         nextRequest = new Date(deltaNowNextRequest)
-        refreshTimeout = deltaNowNextRequest;
+        this.refreshTimeout[leagueId] = deltaNowNextRequest;
       }
 
       if (!rounds_detailed.schedule_start && !rounds_detailed.schedule_end) {
-        refreshTimeout = 24 * 12 * fiveMinutes; // one day
-        nextRequest = new Date((now * 1000 + refreshTimeout));
+        this.refreshTimeout[leagueId] = 24 * 12 * fiveMinutes; // one day
+        nextRequest = new Date((now * 1000 + this.refreshTimeout[leagueId]));
       } else if (times.length >= 1) {
         let start = times.length === 1 ? times[0] : times.reduce((prev, curr) => (Math.abs(curr - now) < Math.abs(prev - now) ? curr : prev)) // closest time to now
         let startIndex = times.findIndex(t => t === start)
@@ -184,11 +185,11 @@ module.exports = NodeHelper.create({
 
         // now is in between the start and the end time of the event
         if (now >= start && end > 0 && now <= end) {
-          nextRequest = new Date((now * 1000 + refreshTimeout));
+          nextRequest = new Date((now * 1000 + this.refreshTime));
           // now is before the start of the event
         } else if (now < start) {
           const deltaNowStart = start - now;
-          refreshTimeout = deltaNowStart * 1000;
+          this.refreshTimeout[leagueId] = deltaNowStart * 1000;
           nextRequest = new Date(start * 1000);
           // now is past the end of the event
         } else if (now > end) {
@@ -199,13 +200,14 @@ module.exports = NodeHelper.create({
       }
 
       const MAX_TIMEOUT_VALUE = 2147483647 // https://stackoverflow.com/a/56718027/448660
-      refreshTimeout = refreshTimeout > MAX_TIMEOUT_VALUE ? MAX_TIMEOUT_VALUE : refreshTimeout
+      this.refreshTimeout[leagueId] = this.refreshTimeout[leagueId] > MAX_TIMEOUT_VALUE ? MAX_TIMEOUT_VALUE : this.refreshTimeout[leagueId]
+      nextRequest = new Date(this.refreshTimeout[leagueId] + new Date().getTime())
       this.timeoutStandings[leagueId] = setTimeout(() => {
         this.getStandings(leagueId, round);
-      }, refreshTimeout);
+      }, this.refreshTimeout[leagueId]);
 
       const round_title = rounds_detailed.round_title
-      Log.info(this.name, `getStandings | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest} for ${round_title}`)
+      Log.info(this.name, `getStandings | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest}`)
 
 
       const doRequest = () => {
@@ -231,7 +233,7 @@ module.exports = NodeHelper.create({
         }
 
         forLoop().then(() => {
-          this.refreshTime = refreshTimeout
+          this.refreshTime = this.refreshTimeout[leagueId]
           this.sendSocketNotification(this.name + '-STANDINGS', {
             leagueId: leagueId,
             standings: standings,
@@ -252,7 +254,7 @@ module.exports = NodeHelper.create({
 
   getScorers: async function (leagueId) {
     const url = `${this.baseURL}/competitions/${leagueId.toString()}/scorers`;
-    Log.info(this.name, 'getScorers', url);
+    Log.debug(this.name, 'getScorers', url);
 
     const data = await this.doPost(url)
     if (data) {
@@ -260,7 +262,7 @@ module.exports = NodeHelper.create({
       if (!this.showStandings) {
         this.refreshTime = (data.refresh_time || 5 * 60) * 1000;
       }
-      Log.debug(this.name, 'getScorers | refresh_time', data.refresh_time, this.refreshTime);
+      Log.debug(this.name, 'getScorers | refresh_time', data.refresh_time, (this.refreshTimeout[leagueId] || this.refreshTime));
       const scorers = data.data.filter(d => d.type === 'scorers' && d.scorers) || [];
       this.sendSocketNotification(this.name + '-SCORERS', {
         leagueId: leagueId,
@@ -268,32 +270,32 @@ module.exports = NodeHelper.create({
       });
       this.timeoutScorers[leagueId] = setTimeout(() => {
         this.getScorers(leagueId);
-      }, this.refreshTime);
+      }, this.refreshTimeout[leagueId] || this.refreshTime);
 
-      const nextRequest = new Date(new Date().getTime() + this.refreshTime)
+      const nextRequest = new Date(new Date().getTime() + (this.refreshTimeout[leagueId] || this.refreshTime))
       Log.info(this.name, `getScorers | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest}`)
     } else {
       Log.error(this.name, 'getScorers', data);
       this.timeoutScorers[leagueId] = setTimeout(() => {
         this.getScorers(leagueId);
-      }, 5 * 60 * 1000);
+      }, this.refreshTimeout[leagueId] || 5 * 60 * 1000);
     }
   },
 
   getDetails: async function (leagueId, matchId) {
     const url = `${this.baseURL}/competitions/${leagueId.toString()}/matches/${matchId.toString()}/details`;
-    Log.debug(this.name, 'getDetails', url);
+    Log.debug(this.name, 'getDetails', leagueId, url);
 
     let details = []
     return new Promise(async (resolve, _reject) => {
       const data = await this.doPost(url)
       if (data && data.data) {
-        Log.debug(this.name, 'getDetails | data', JSON.stringify(data, null, 2));
+        Log.debug(this.name, 'getDetails | data', leagueId, JSON.stringify(data, null, 2));
         details = data.data || [];
         resolve(details);
       } else {
         resolve([]);
-        Log.error(this.name, 'getDetails', url, data);
+        Log.error(this.name, 'getDetails', leagueId, url, data);
       }
     });
   },
