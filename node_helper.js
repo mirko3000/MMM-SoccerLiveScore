@@ -161,15 +161,18 @@ module.exports = NodeHelper.create({
         let next_round = current_round;
         let next_start = now + 24 * 12 * fiveMinutes; // now + 24 hours in minutes
         let deltaNowNextRequest = next_start * 1000;
-
         if (next_round <= selectable_rounds) {
           const scheduleStart = data.rounds_detailed[current_round] && data.rounds_detailed[current_round].schedule_start || 0
           if (scheduleStart !== 0) {
             next_start = scheduleStart - fiveMinutes
             deltaNowNextRequest = next_start * 1000
           }
+        } else {
+          this.refreshTimeout[leagueId] = null
+          clearInterval(this.timeoutStandings[leagueId]);
+          clearInterval(this.timeoutTable[leagueId]);
+          clearInterval(this.timeoutScorers[leagueId]);
         }
-        nextRequest = new Date(deltaNowNextRequest)
         this.refreshTimeout[leagueId] = deltaNowNextRequest;
       }
 
@@ -191,6 +194,7 @@ module.exports = NodeHelper.create({
           const deltaNowStart = start - now;
           this.refreshTimeout[leagueId] = deltaNowStart * 1000;
           nextRequest = new Date(start * 1000);
+
           // now is past the end of the event
         } else if (now > end) {
           nextRoundRequest();
@@ -199,9 +203,15 @@ module.exports = NodeHelper.create({
         nextRoundRequest();
       }
 
-      const MAX_TIMEOUT_VALUE = 2147483647 // https://stackoverflow.com/a/56718027/448660
-      this.refreshTimeout[leagueId] = this.refreshTimeout[leagueId] > MAX_TIMEOUT_VALUE ? MAX_TIMEOUT_VALUE : this.refreshTimeout[leagueId]
-      nextRequest = new Date(this.refreshTimeout[leagueId] + new Date().getTime())
+      // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#:~:text=Maximum%20delay%20value,the%20timeout%20being%20executed%20immediately.
+      // https://stackoverflow.com/a/56718027/448660
+      const MAX_TIMEOUT_VALUE = 2147483647
+
+      if (this.refreshTimeout[leagueId] > MAX_TIMEOUT_VALUE) {
+        this.refreshTimeout[leagueId] = MAX_TIMEOUT_VALUE
+        nextRequest = new Date(this.refreshTimeout[leagueId] + new Date().getTime())
+      }
+
       this.timeoutStandings[leagueId] = setTimeout(() => {
         this.getStandings(leagueId, round);
       }, this.refreshTimeout[leagueId]);
