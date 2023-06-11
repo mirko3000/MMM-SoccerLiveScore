@@ -19,6 +19,7 @@ module.exports = NodeHelper.create({
   showTables: false,
   showScorers: false,
   showDetails: false,
+  scrollVertical: true,
   language: 'en',
   supportedLanguages: ['it', 'de', 'en'],
   baseURL: 'https://toralarm.com/api/api',
@@ -102,7 +103,7 @@ module.exports = NodeHelper.create({
     Log.debug(this.name, 'getTable', url);
     const data = await this.doPost(url)
     if (data) {
-      Log.debug(this.name, 'getTable | data', JSON.stringify(data, null, 2));
+      Log.debug(this.name, 'getTable     | data', JSON.stringify(data, null, 2));
       if (!this.showStandings) {
         this.refreshTimeout[leagueId] = (data.refresh_time || 5 * 60) * 1000;
       }
@@ -113,7 +114,7 @@ module.exports = NodeHelper.create({
       });
 
       const nextRequest = new Date(new Date().getTime() + this.refreshTimeout[leagueId])
-      Log.info(this.name, `getTable | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest}`)
+      Log.info(this.name, `getTable     | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest}`)
 
       this.timeoutTable[leagueId] = setTimeout(() => {
         this.getTable(leagueId);
@@ -268,11 +269,11 @@ module.exports = NodeHelper.create({
 
     const data = await this.doPost(url)
     if (data) {
-      Log.debug(this.name, 'getScorers | data', JSON.stringify(data, null, 2));
+      Log.debug(this.name, 'getScorers   | data', JSON.stringify(data, null, 2));
       if (!this.showStandings) {
         this.refreshTime = (data.refresh_time || 5 * 60) * 1000;
       }
-      Log.debug(this.name, 'getScorers | refresh_time', data.refresh_time, (this.refreshTimeout[leagueId] || this.refreshTime));
+      Log.debug(this.name, 'getScorers   | refresh_time', data.refresh_time, (this.refreshTimeout[leagueId] || this.refreshTime));
       const scorers = data.data.filter(d => d.type === 'scorers' && d.scorers) || [];
       this.sendSocketNotification(this.name + '-SCORERS', {
         leagueId: leagueId,
@@ -283,7 +284,7 @@ module.exports = NodeHelper.create({
       }, this.refreshTimeout[leagueId] || this.refreshTime);
 
       const nextRequest = new Date(new Date().getTime() + (this.refreshTimeout[leagueId] || this.refreshTime))
-      Log.info(this.name, `getScorers | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest}`)
+      Log.info(this.name, `getScorers   | next request for league "${this.leaguesList[leagueId].name} (${leagueId})" on ${nextRequest}`)
     } else {
       Log.error(this.name, 'getScorers', data);
       this.timeoutScorers[leagueId] = setTimeout(() => {
@@ -300,7 +301,8 @@ module.exports = NodeHelper.create({
     return new Promise(async (resolve, _reject) => {
       const data = await this.doPost(url)
       if (data && data.data) {
-        Log.debug(this.name, 'getDetails | data', leagueId, JSON.stringify(data, null, 2));
+        Log.debug(this.name, 'getDetails   | data', leagueId, JSON.stringify(data, null, 2));
+        Log.debug(this.name, 'getDetails   | data', 'leagueId', leagueId, 'matchId', matchId);
         details = data.data || [];
         resolve(details);
       } else {

@@ -28,6 +28,7 @@ Module.register('MMM-SoccerLiveScore', {
     showTables: true,
     showScorers: true,
     showDetails: true,
+    scrollVertical: true,
     logosToInvert: [30001132, 30000991, 30000145], // Juventus team_id in 1, 23, and 328 leagues
   },
 
@@ -539,16 +540,18 @@ Module.register('MMM-SoccerLiveScore', {
       wrapper.innerHTML = 'Loading...';
     }
 
-    setTimeout(() => {
-      const rect = outerWrapper.getBoundingClientRect();
-      const top = rect.height + rect.top;
-      if (window.innerHeight < top) {
-        var r = document.querySelector(':root');
-        const offset = window.innerHeight - top;
-        r.style.setProperty('--vertical-animation-offset', parseInt(offset * 1.01) + 'px');
-        outerWrapper.classList.add('MMM-SoccerLiveScore-vertical-infinite-scroll');
-      }
-    }, 500);
+    if (this.config.scrollVertical) {
+      setTimeout(() => {
+        const rect = outerWrapper.getBoundingClientRect();
+        const top = rect.height + rect.top;
+        if (window.innerHeight < top) {
+          var r = document.querySelector(':root');
+          const offset = window.innerHeight - top;
+          r.style.setProperty('--vertical-animation-offset', parseInt(offset * 1.01) + 'px');
+          outerWrapper.classList.add('MMM-SoccerLiveScore-vertical-infinite-scroll');
+        }
+      }, 500);
+    }
 
     return outerWrapper;
   },
