@@ -1,6 +1,6 @@
 {
   "name": "MMM-SoccerLiveScore",
-  "version": "3.1.10",
+  "version": "3.2.0",
   "description": "MagicMirror-Module for displaying live soccer scores.",
   "main": "MMM-SoccerLiveScore.js",
   "scripts": {
