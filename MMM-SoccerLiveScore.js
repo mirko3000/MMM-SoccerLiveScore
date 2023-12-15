@@ -144,7 +144,7 @@ Module.register('MMM-SoccerLiveScore', {
       const title = document.createElement('header');
 
       title.innerHTML = (this.leagueIds[this.activeId].name + roundLabel).trim();
-      wrapper.appendChild(title);
+      //wrapper.appendChild(title);
 
       const activeLeagueStandings = standing.data || [];
       activeLeagueStandings.forEach((activeStanding) => {
@@ -319,7 +319,7 @@ Module.register('MMM-SoccerLiveScore', {
           places.className = 'xsmall';
           const title = document.createElement('header');
           title.innerHTML = this.leagueIds[this.activeId].name;
-          wrapper.appendChild(title);
+          //wrapper.appendChild(title);
 
           const labelRow = document.createElement('tr');
 
